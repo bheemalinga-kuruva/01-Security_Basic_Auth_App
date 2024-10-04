@@ -1,5 +1,6 @@
 package com.bhim.config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
@@ -31,17 +33,29 @@ public class SecurityConfig {
 			
 			return new InMemoryUserDetailsManager(adminUser, normalUser);
 	}
+/*	@Bean
+	public InMemoryUserDetailsManager userDetailsService() {
+		UserDetails user = User.withDefaultPasswordEncoder()
+				.username("user")
+				.password("password")
+				.roles("USER")
+				.build();
+		return new InMemoryUserDetailsManager(user);
+	}
+
+*/
 
 	@Bean
-	public SecurityFilterChain securityFilter(HttpSecurity http) throws Exception{
-		
-		http.authorizeHttpRequests((request) -> request
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.authorizeHttpRequests((authorize) -> authorize		
 				.requestMatchers("/contact", "/products").permitAll()
 				.anyRequest().authenticated()
-		).formLogin();
-		
+				)
+				.httpBasic(withDefaults())
+				.formLogin(withDefaults());
 		return http.build();
 	}
+
 
 
 }
